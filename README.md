@@ -1,48 +1,36 @@
-# Predicción de la gravedad de los siniestros de tránsito en Ecuador
+# Análisis de siniestros de tránsito en Ecuador
 
-Proyecto de la asignatura Minería de Datos de la Universidad Estatal Amazónica.
-Aplicamos tres técnicas de clasificación y una de agrupamiento a las bases abiertas
-de siniestros de tránsito del INEC, con el objetivo de estimar si un siniestro termina
-con al menos un fallecido en el lugar.
+En este proyecto analizo los registros de siniestros de tránsito publicados por el INEC y la Agencia Nacional de Tránsito. Mi objetivo es estudiar qué características se relacionan con que un siniestro tenga al menos un fallecido en el lugar. También comparo los registros de la Amazonía con los del resto del país y describo perfiles mediante agrupamiento.
 
-## Datos
+## Datos y periodo
 
-Las bases las publica el INEC a partir de los registros administrativos de la Agencia
-Nacional de Tránsito, con licencia Creative Commons Atribución 4.0. Se descargan por
-trimestre desde las páginas de Siniestros de Tránsito del INEC
-(https://www.ecuadorencifras.gob.ec/estadisticas-siniestros-de-transito/).
-El repositorio no incluye los datos, hay que descargarlos con el paso 0.
+Descargo los archivos trimestrales desde las páginas oficiales del [INEC](https://www.ecuadorencifras.gob.ec/estadisticas-siniestros-de-transito/). En `urls.txt` guardé los enlaces de los cuatro trimestres de 2023 y 2024.
 
-Los archivos trimestrales son cortes acumulados del año. Para evitar contar varias
-veces las observaciones que reaparecen en cada corte, el análisis selecciona el cuarto
-trimestre de cada año (`TRIMESTRE_ANALISIS = 4`). Los cierres de 2023 y 2024 usan
-códigos numéricos para provincia, zona, clase y causa. Provincia se decodifica con la
-codificación DPA; las otras categorías se conservan como códigos nominales porque los
-diccionarios incluidos por el INEC no contienen sus etiquetas.
+Los archivos trimestrales son acumulativos: cada nuevo corte vuelve a incluir observaciones de los anteriores. Para no sumar varias veces esos cortes, configuré el análisis con el cierre del cuarto trimestre de cada año (`TRIMESTRE_ANALISIS = 4`). Trabajé con los cierres de 2023 y 2024.
 
-## Estructura
+En los archivos anuales, provincia, zona, clase y causa aparecen como códigos numéricos. Convertí los códigos de provincia con la codificación DPA. Dejé zona, clase y causa como categorías, sin atribuirles etiquetas que no aparecen en los diccionarios incluidos por el INEC.
 
-```
-src/
-  config.py                      parámetros, rutas y mapeo de columnas
-  utilidades.py                  funciones compartidas
-  00_descargar_datos.py          descarga y descomprime las bases del INEC
-  01_eda.py                      exploración, nulos, duplicados, atípicos y gráficos
-  02_preprocesamiento.py         limpieza, transformaciones y variables derivadas
-  03_modelado.py                 tres modelos, validación cruzada y evaluación
-  04_clustering_y_amazonia.py    K-means y comparación de la Amazonía
-informe_resultados.md            resultados, decisiones y limitaciones del análisis
-pruebas/
-  generar_datos_simulados.py     datos inventados solo para probar que el código corre
-urls.txt                         direcciones de descarga
-```
+## Qué hace el código
 
-## Cómo ejecutarlo
+- `src/00_descargar_datos.py`: con este paso leo `urls.txt`, descargo los ZIP del INEC y los descomprimo en `data/raw/`.
+- `src/01_eda.py`: aquí cargo los CSV, identifico las columnas y genero tablas y gráficos de exploración. Registro el mapeo en `outputs/tablas/mapeo_columnas.csv`.
+- `src/02_preprocesamiento.py`: aquí limpio textos, defino la variable objetivo y derivo variables de calendario y ubicación. Guardo los datos preparados en `data/processed/` y los predictores en `outputs/tablas/features_utilizadas.csv`.
+- `src/03_modelado.py`: con este script divido los datos en entrenamiento y prueba, comparo regresión logística, árbol de decisión y random forest, y guardo sus métricas y gráficos.
+- `src/04_clustering_y_amazonia.py`: aquí elijo el número de grupos con la silueta, describo los perfiles y comparo por separado la proporción de registros con fallecidos entre la Amazonía y el resto del país.
+- `src/config.py`: en este archivo centralicé las rutas, la semilla, los parámetros, los patrones de detección y las categorías geográficas.
+- `src/utilidades.py`: aquí reuní las funciones que reutilizo para leer y normalizar datos, detectar columnas, derivar el calendario y preparar los modelos.
+- `pruebas/generar_datos_simulados.py`: uso este script para crear datos inventados y comprobar que el flujo se ejecuta. No los uso para los resultados del informe.
+
+Guardo las tablas en `outputs/tablas/` y las figuras en `outputs/figuras/`. En [informe_resultados.md](informe_resultados.md) resumo los resultados que obtuve y sus limitaciones.
+
+## Cómo lo ejecuto en Linux
+
+Desde la carpeta del proyecto creo un entorno virtual, instalo las dependencias y ejecuto los pasos en orden:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate        # en Windows .venv\Scripts\activate
-pip install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 
 python src/00_descargar_datos.py
 python src/01_eda.py
@@ -51,36 +39,20 @@ python src/03_modelado.py
 python src/04_clustering_y_amazonia.py
 ```
 
-Las tablas quedan en `outputs/tablas/` y las figuras en `outputs/figuras/`.
+Para salir del entorno virtual uso `deactivate`.
 
-## Revisión de datos y alcance
+## Decisiones que tomé
 
-- `urls.txt` contiene los ocho enlaces trimestrales de 2023 y 2024. El análisis selecciona
-  los cierres anuales de cada año; `01_eda.py` deja el mapeo observado en
-  `outputs/tablas/mapeo_columnas.csv`.
-- `MAPEO_MANUAL` está vacío porque los nombres lógicos necesarios se detectan en los
-  CSV descargados. El año se obtiene del nombre del archivo cuando no viene como columna.
-- `02_preprocesamiento.py` deja la lista de predictores en
-  `outputs/tablas/features_utilizadas.csv`. Fallecidos, lesionados y total de víctimas
-  no se usan como predictores del objetivo.
-- Las filas con valores idénticos se contabilizan, pero se conservan: el archivo no trae
-  un identificador único para demostrar que dos filas describen el mismo siniestro.
+Definí `objetivo_fallecidos` como 1 cuando `num_fallecido` es mayor que cero. No incluí fallecidos, lesionados ni total de víctimas entre las variables predictoras, porque revelarían directamente información relacionada con el objetivo.
 
-## Decisiones de diseño
+Usé una partición estratificada de 80 % para entrenamiento y 20 % para prueba, con semilla 42. Hice validación cruzada estratificada de cinco particiones solo sobre entrenamiento y reservé prueba para la evaluación final. La imputación, el escalado y la codificación están dentro del pipeline para que sus parámetros se ajusten solo con cada partición de entrenamiento.
 
-- La variable objetivo es `objetivo_fallecidos`, igual a 1 si el siniestro tiene al menos
-  un fallecido en el lugar.
-- La división es 80 % entrenamiento y 20 % prueba, estratificada, con semilla 42.
-- La validación cruzada es estratificada de 5 particiones y se hace solo sobre el
-  conjunto de entrenamiento. El conjunto de prueba se usa una sola vez.
-- La imputación, el escalado y la codificación van dentro de un `Pipeline`; sus
-  estadísticas se ajustan con el entrenamiento de cada partición.
-- Para el desbalance de clases se usan pesos de clase, no remuestreo.
-- Se incluye un clasificador base que siempre predice la clase mayoritaria, para mostrar
-  por qué la exactitud sola engaña cuando los siniestros mortales son minoría.
-- K-means no recibe provincia ni el indicador de Amazonía; la comparación regional se
-  calcula por separado para que la geografía no determine los clústeres de antemano.
+Encontré filas con valores idénticos, pero las conservé: los archivos no incluyen un identificador único que me permita confirmar si son registros duplicados o siniestros diferentes con las mismas características disponibles. Dejé el conteo en la bitácora del preprocesamiento.
 
-## Licencia de los datos
+Para K-means excluí provincia y el indicador de Amazonía; así evité que la ubicación definiera directamente los grupos. La comparación regional la calculé por separado. Como los registros de fallecidos son minoría, comparé precisión, recall, F1, ROC-AUC y PR-AUC, además de exactitud y un clasificador base.
 
-Los datos pertenecen al INEC y se usan bajo la licencia CC BY 4.0.
+## Archivos generados y datos
+
+No incluyo los CSV descargados ni los datos procesados en el repositorio. Para regenerar el análisis ejecuto primero el descargador. Generé las tablas y figuras de `outputs/` con los archivos y parámetros descritos en el informe.
+
+Usé las bases publicadas por el INEC bajo [Creative Commons Atribución 4.0](https://creativecommons.org/licenses/by/4.0/).

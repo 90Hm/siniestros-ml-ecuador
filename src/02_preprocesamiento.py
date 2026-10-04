@@ -32,14 +32,12 @@ def main():
 
     anotar("carga", "registros iniciales", len(df))
 
-    # ------------------------------------------------ 1. texto y datos faltantes
     texto = [c for c in df.select_dtypes(exclude="number").columns if c != "archivo_origen"]
     for c in texto:
         df[c] = df[c].map(lambda v: normalizar_valor(v) if pd.notna(v) else np.nan)
         df[c] = df[c].where(~df[c].isin(config.VALORES_FALTANTES), np.nan)
     anotar("limpieza de texto", "columnas de texto en mayúsculas, sin tildes y con faltantes unificados", len(texto))
 
-    # --------------------------------------------------------------- 2. duplicados
     sin_origen = [c for c in df.columns if c != "archivo_origen"]
     n_dup = int(df.duplicated(subset=sin_origen).sum())
     anotar(
@@ -48,7 +46,6 @@ def main():
         n_dup,
     )
 
-    # ------------------------------------------------------------ 3. variable objetivo
     fallecidos = pd.to_numeric(df[cols["fallecidos"]], errors="coerce")
     sin_etiqueta = int(fallecidos.isna().sum())
     df = df.loc[fallecidos.notna()].reset_index(drop=True)
@@ -57,7 +54,6 @@ def main():
     y = (fallecidos > 0).astype(int)
     anotar("objetivo", "siniestros con al menos un fallecido en el lugar", int(y.sum()))
 
-    # ------------------------------------------------ 4. variables derivadas
     X = pd.DataFrame(index=df.index)
 
     if cols["hora"]:
@@ -97,7 +93,6 @@ def main():
         if cols[clave]:
             X[clave] = df[cols[clave]].astype("string").fillna("SIN_DATO")
 
-    # ---- variables adicionales detectadas automáticamente (revisar el resultado)
     ya_usadas = {cols[k] for k in ("fallecidos", "lesionados", "fecha", "anio", "mes", "dia", "hora",
                                    "provincia", "zona", "clase", "causa") if cols[k]}
     excluir = [re.compile(p) for p in config.EXCLUIR_COMO_FEATURE]
@@ -122,7 +117,6 @@ def main():
     if extras_cat or extras_num:
         anotar("variables adicionales", "incluidas automáticamente, revisar features_utilizadas.csv", len(extras_cat) + len(extras_num))
 
-    # ------------------------------------------------------ 5. tipos y resultado
     categoricas = [c for c in X.columns if X[c].dtype == object or str(X[c].dtype) in ("string", "str")]
     numericas = [c for c in X.columns if c not in categoricas]
 
@@ -141,8 +135,7 @@ def main():
     print(f"Variables numéricas ({len(numericas)}): {numericas}")
     print(f"Variables categóricas ({len(categoricas)}): {categoricas}")
     print(f"Porcentaje de la clase positiva: {y.mean() * 100:.2f} %")
-    print("\nREVISE features_utilizadas.csv. Si aparece una variable que revele el resultado "
-          "(por ejemplo, algo derivado de víctimas), agregue su patrón a EXCLUIR_COMO_FEATURE.")
+    print("\nLa lista de predictores quedó registrada en features_utilizadas.csv.")
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 
-# Se pueden cambiar con variables de entorno, útil para probar con datos simulados
+# Las variables de entorno permiten aislar los directorios de prueba.
 DATOS_CRUDOS = Path(os.environ.get("SINIESTROS_DATA_DIR", RAIZ / "data" / "raw"))
 DATOS_PROCESADOS = Path(os.environ.get("SINIESTROS_PROC_DIR", RAIZ / "data" / "processed"))
 SALIDAS = Path(os.environ.get("SINIESTROS_OUT_DIR", RAIZ / "outputs"))
@@ -28,7 +28,7 @@ TRIMESTRE_ANALISIS = 4
 
 # Patrones (expresiones regulares sobre el nombre normalizado de la columna).
 # El código prueba los patrones en orden y toma la primera columna que coincida.
-# Si el INEC nombra distinto una variable, se corrige aquí o en MAPEO_MANUAL.
+# Los nombres alternativos se especifican en MAPEO_MANUAL.
 PATRONES = {
     "fallecidos": [r"fallec.*situ", r"fallec", r"muert"],
     "lesionados": [r"lesion", r"herid"],
@@ -43,7 +43,7 @@ PATRONES = {
     "causa": [r"causa.*prob", r"causa"],
 }
 
-# Si la detección automática se equivoca, se fuerza aquí. Ejemplo:
+# Este diccionario permite reemplazar resultados de la detección automática.
 # MAPEO_MANUAL = {"fallecidos": "num_fallecidos_in_situ", "hora": "hora_siniestro"}
 MAPEO_MANUAL = {}
 

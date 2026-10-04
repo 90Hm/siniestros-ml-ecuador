@@ -62,8 +62,7 @@ def metricas_prueba(y_real, y_pred, y_prob):
 
 
 def main():
-    # El clasificador base nunca predice la clase positiva, por eso su precisión
-    # queda indefinida y scikit-learn avisa. Es un resultado esperado.
+    # El baseline siempre predice la clase mayoritaria y no identifica positivos.
     warnings.filterwarnings("ignore", category=UserWarning)
     from sklearn.exceptions import UndefinedMetricWarning
     warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
@@ -73,7 +72,6 @@ def main():
     y = datos["objetivo_fallecidos"]
     print(f"Registros: {len(datos):,} | positivos: {y.sum():,} ({y.mean() * 100:.2f} %)")
 
-    # ------------------------------------------------------ división de datos
     X_ent, X_pru, y_ent, y_pru = train_test_split(
         X, y, test_size=config.PROPORCION_PRUEBA, stratify=y, random_state=config.SEMILLA)
     pd.DataFrame({
@@ -92,7 +90,6 @@ def main():
     base = Pipeline([("prep", construir_preprocesador(num, cat)),
                      ("modelo", DummyClassifier(strategy="prior"))])
 
-    # ---------------------------------------------------- parámetros utilizados
     filas = []
     for nombre, m in modelos.items():
         for p, v in m.get_params().items():
@@ -109,7 +106,6 @@ def main():
         for n, ps in principales.items()
     ]).to_csv(config.TABLAS / "parametros_modelos.csv", index=False)
 
-    # ------------------------------------------------------- validación cruzada
     cv = StratifiedKFold(n_splits=config.K_PARTICIONES, shuffle=True, random_state=config.SEMILLA)
     filas_cv = []
     for nombre, pipe in {**pipelines, "Clasificador base": base}.items():
@@ -124,7 +120,6 @@ def main():
     tabla_cv = pd.DataFrame(filas_cv).round(4)
     tabla_cv.to_csv(config.TABLAS / "comparacion_validacion_cruzada.csv", index=False)
 
-    # ---------------------------------------------------- evaluación en prueba
     filas_test, predicciones = [], {}
     for nombre, pipe in {**pipelines, "Clasificador base": base}.items():
         pipe.fit(X_ent, y_ent)
@@ -137,7 +132,6 @@ def main():
     print("\nResultados en el conjunto de prueba")
     print(tabla_test.to_string(index=False))
 
-    # ------------------------------------------------------------- figuras
     k = len(pipelines)
     fig, ejes = plt.subplots(1, k, figsize=(4.6 * k, 4))
     for eje, nombre in zip(ejes, pipelines):
@@ -160,7 +154,6 @@ def main():
     plt.savefig(config.FIGURAS / "fig_curvas_roc_pr.png", dpi=150)
     plt.close()
 
-    # comparación de F1 y recall con barras de error de la validación cruzada
     modelos_tabla = tabla_cv[tabla_cv["modelo"].isin(pipelines)]
     x = np.arange(len(modelos_tabla))
     plt.figure(figsize=(7.5, 4.2))
@@ -176,7 +169,6 @@ def main():
     plt.savefig(config.FIGURAS / "fig_validacion_cruzada.png", dpi=150)
     plt.close()
 
-    # ----------------------------------------------- interpretación de modelos
     rf = pipelines["Random forest"]
     nombres = rf.named_steps["prep"].get_feature_names_out()
     imp = pd.Series(rf.named_steps["modelo"].feature_importances_, index=nombres).sort_values(ascending=False)
@@ -194,7 +186,7 @@ def main():
     coef = pd.Series(lr.named_steps["modelo"].coef_[0], index=lr.named_steps["prep"].get_feature_names_out())
     coef.sort_values(ascending=False).rename("coeficiente").to_csv(config.TABLAS / "coeficientes_regresion_logistica.csv")
 
-    print(f"\nListo. Resultados en {config.TABLAS} y {config.FIGURAS}")
+    print(f"\nResultados guardados en {config.TABLAS} y {config.FIGURAS}.")
 
 
 if __name__ == "__main__":

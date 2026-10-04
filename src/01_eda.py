@@ -28,7 +28,6 @@ def main():
     cols = detectar_columnas(df)
     guardar_mapeo(cols)
 
-    # ------------------------------------------------------------ dimensiones
     n_filas, n_cols = df.drop(columns=["archivo_origen"]).shape
     print(f"Registros: {n_filas:,} | Variables: {n_cols}")
     if n_filas < 1000 or n_cols < 5:
@@ -40,7 +39,6 @@ def main():
 
     datos = df.drop(columns=["archivo_origen"])
 
-    # ------------------------------------------------- estadísticas descriptivas
     numericas = datos.select_dtypes(include="number")
     if not numericas.empty:
         numericas.describe().T.round(3).to_csv(config.TABLAS / "estadisticas_numericas.csv")
@@ -53,12 +51,10 @@ def main():
         })
         resumen.to_csv(config.TABLAS / "estadisticas_categoricas.csv")
 
-    # --------------------------------------------------------------------- nulos
     nulos = (datos.isna().mean() * 100).round(2).sort_values(ascending=False)
     nulos.rename("porcentaje_nulos").to_csv(config.TABLAS / "nulos_por_variable.csv")
     print(f"Variables con nulos: {(nulos > 0).sum()} de {len(nulos)}")
 
-    # ---------------------------------------------------------------- duplicados
     n_dup = int(datos.duplicated().sum())
     pd.DataFrame({
         "duplicados": [n_dup],
@@ -66,7 +62,6 @@ def main():
     }).to_csv(config.TABLAS / "duplicados.csv", index=False)
     print(f"Registros duplicados: {n_dup:,} ({n_dup / len(datos) * 100:.2f} %)")
 
-    # ------------------------------------------------------------ valores atípicos
     trabajo = pd.DataFrame(index=df.index)
     if cols["hora"]:
         trabajo["hora_num"] = extraer_hora(df[cols["hora"]])
@@ -98,12 +93,10 @@ def main():
             eje.set_title(c)
         guardar_fig("fig_boxplots_atipicos.png")
 
-    # ----------------------------------------------------------- visualizaciones
     objetivo = None
     if cols["fallecidos"]:
         objetivo = (pd.to_numeric(df[cols["fallecidos"]], errors="coerce").fillna(0) > 0).astype(int)
 
-    # 1. Siniestros por hora
     if cols["hora"]:
         hora = extraer_hora(df[cols["hora"]])
         conteo = hora.value_counts().sort_index()
@@ -123,7 +116,6 @@ def main():
             plt.title("Porcentaje de siniestros mortales según la hora")
             guardar_fig("fig_tasa_mortal_por_hora.png")
 
-    # 2. Siniestros por día de la semana
     _, dia_semana = derivar_calendario(df, cols)
     if dia_semana.notna().any():
         conteo = dia_semana.dropna().astype(int).value_counts().sort_index()
@@ -134,7 +126,6 @@ def main():
         plt.xticks(rotation=30)
         guardar_fig("fig_siniestros_por_dia.png")
 
-    # 3. Provincias con más siniestros
     if cols["provincia"]:
         prov = df[cols["provincia"]].map(normalizar_valor)
         top = prov.value_counts().head(10).sort_values()
@@ -144,7 +135,6 @@ def main():
         plt.title("Diez provincias con más siniestros")
         guardar_fig("fig_top_provincias.png")
 
-    # 4. Balance de la variable objetivo
     if objetivo is not None:
         cuenta = objetivo.value_counts().sort_index()
         plt.figure(figsize=(5, 4))
@@ -155,7 +145,6 @@ def main():
         guardar_fig("fig_balance_objetivo.png")
         print(f"Siniestros con fallecidos: {objetivo.mean() * 100:.2f} %")
 
-    # 5. Causa probable más frecuente
     if cols["causa"]:
         causa = df[cols["causa"]].map(normalizar_valor)
         top = causa.value_counts().head(10).sort_values()
@@ -165,7 +154,7 @@ def main():
         plt.title("Diez causas probables más frecuentes")
         guardar_fig("fig_top_causas.png")
 
-    print(f"\nListo. Tablas en {config.TABLAS} y figuras en {config.FIGURAS}")
+    print(f"\nTablas guardadas en {config.TABLAS}; figuras guardadas en {config.FIGURAS}.")
 
 
 if __name__ == "__main__":

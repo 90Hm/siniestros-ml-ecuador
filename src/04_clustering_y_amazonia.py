@@ -23,12 +23,11 @@ def main():
     cat_cluster = [c for c in cat if c != "provincia"]
     X = datos[num_cluster + cat_cluster]
 
-    # K-means no usa la variable objetivo, solo describe los datos
+    # K-means agrupa los registros sin utilizar la variable objetivo.
     matriz = construir_preprocesador(num_cluster, cat_cluster).fit_transform(X)
     rng = np.random.default_rng(config.SEMILLA)
     idx = rng.choice(len(matriz), size=min(config.MUESTRA_SILUETA, len(matriz)), replace=False)
 
-    # ------------------------------------------------------ elección de k
     filas = []
     for k in range(config.K_MIN, config.K_MAX + 1):
         km = KMeans(n_clusters=k, n_init=10, random_state=config.SEMILLA).fit(matriz)
@@ -53,7 +52,6 @@ def main():
     plt.savefig(config.FIGURAS / "fig_eleccion_k.png", dpi=150)
     plt.close()
 
-    # ------------------------------------------------------ ajuste final
     km = KMeans(n_clusters=k_final, n_init=10, random_state=config.SEMILLA).fit(matriz)
     datos = datos.assign(cluster=km.labels_)
 
@@ -83,7 +81,6 @@ def main():
     plt.savefig(config.FIGURAS / "fig_clusters_pca.png", dpi=150)
     plt.close()
 
-    # ------------------------------------------- Amazonía frente al resto
     if "es_amazonia" in datos.columns:
         resumen = []
         for etiqueta, valor in (("Amazonía", 1), ("Resto del país", 0)):
@@ -119,7 +116,7 @@ def main():
     else:
         print("No se pudo comparar la Amazonía porque no hay columna de provincia.")
 
-    print(f"\nListo. Resultados en {config.TABLAS} y {config.FIGURAS}")
+    print(f"\nResultados guardados en {config.TABLAS} y {config.FIGURAS}.")
 
 
 if __name__ == "__main__":

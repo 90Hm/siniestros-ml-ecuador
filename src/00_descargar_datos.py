@@ -1,11 +1,4 @@
-"""Paso 0. Descarga y descomprime las bases de datos abiertas del INEC.
-
-Lee las direcciones de urls.txt (una por línea, las que empiezan con # se
-ignoran), descarga cada archivo ZIP en data/raw/ y lo descomprime.
-
-Este script se ejecuta en su computador. Si alguna descarga falla, baje el ZIP
-a mano desde la página del INEC y descomprímalo en data/raw/.
-"""
+"""Descarga y descomprime en data/raw/ los ZIP indicados en urls.txt."""
 import urllib.parse
 import urllib.request
 import zipfile
@@ -34,14 +27,14 @@ def main():
             with urllib.request.urlopen(req, timeout=120) as r, open(destino, "wb") as f:
                 f.write(r.read())
         except Exception as e:
-            print(f"  No se pudo descargar ({e}). Descárguelo a mano desde la página del INEC.")
+            print(f"  Falló la descarga ({e}). El archivo se puede obtener desde la página del INEC.")
             continue
         if zipfile.is_zipfile(destino):
             carpeta = config.DATOS_CRUDOS / destino.stem
             with zipfile.ZipFile(destino) as z:
                 z.extractall(carpeta)
             print(f"  Descomprimido en {carpeta}")
-    print("\nListo. Revise que en data/raw/ estén solo las bases de datos abiertas (CSV).")
+    print("\nDescarga finalizada. Los archivos se guardaron en data/raw/.")
 
 
 if __name__ == "__main__":

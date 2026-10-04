@@ -13,9 +13,6 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 import config
 
 
-# ----------------------------------------------------------------------------
-# Texto y nombres de columnas
-# ----------------------------------------------------------------------------
 def quitar_tildes(texto):
     return unicodedata.normalize("NFKD", str(texto)).encode("ascii", "ignore").decode()
 
@@ -41,9 +38,6 @@ def _periodo_trimestral(nombre):
     return int(anio.group(1)), numero
 
 
-# ----------------------------------------------------------------------------
-# Lectura de archivos
-# ----------------------------------------------------------------------------
 def _detectar_formato(ruta):
     """Prueba combinaciones de codificación y separador hasta que una funcione."""
     for enc in ("utf-8-sig", "latin-1"):
@@ -102,9 +96,6 @@ def cargar_datos(directorio=None):
     return pd.concat(partes, ignore_index=True, sort=False)
 
 
-# ----------------------------------------------------------------------------
-# Detección de columnas
-# ----------------------------------------------------------------------------
 def detectar_columnas(df):
     """Devuelve {variable_logica: nombre_de_columna o None}."""
     encontradas = {}
@@ -125,12 +116,9 @@ def guardar_mapeo(cols):
     print("\nMapeo de columnas detectado")
     for k, v in cols.items():
         print(f"  {k:<11} -> {v}")
-    print("  Si alguna está mal o falta, corríjala en MAPEO_MANUAL de config.py\n")
+    print("  El mapeo manual se configura en MAPEO_MANUAL dentro de config.py.\n")
 
 
-# ----------------------------------------------------------------------------
-# Hora y calendario
-# ----------------------------------------------------------------------------
 def extraer_hora(serie):
     """Devuelve la hora entera 0-23 a partir de '14:30', '1430', '14', o fechas con hora."""
     def convertir(valor):
@@ -211,9 +199,6 @@ def franja_horaria(hora):
     ).astype("object")
 
 
-# ----------------------------------------------------------------------------
-# Preprocesador para los modelos
-# ----------------------------------------------------------------------------
 def construir_preprocesador(columnas_num, columnas_cat):
     """Escala las numéricas y codifica en one-hot las categóricas.
 
