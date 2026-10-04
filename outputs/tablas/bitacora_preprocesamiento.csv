@@ -1,0 +1,9 @@
+paso,detalle,registros_o_columnas_afectados
+carga,registros iniciales,42214
+limpieza de texto,"columnas de texto en mayúsculas, sin tildes y con faltantes unificados",0
+duplicados,filas idénticas contabilizadas y conservadas porque no hay ID único para confirmar duplicados,882
+objetivo,registros sin dato de fallecidos eliminados,0
+objetivo,siniestros con al menos un fallecido en el lugar,4180
+feature engineering,"hora_num, franja_horaria y hora_pico creadas; los nulos se imputarán en el pipeline",0
+feature engineering,"dia_semana, fin_de_semana y viernes_a_domingo creadas",42214
+feature engineering,es_amazonia creada a partir de la provincia,615

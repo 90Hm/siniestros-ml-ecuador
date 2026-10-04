@@ -1,0 +1,5 @@
+modelo,accuracy,precision,recall,f1,roc_auc,pr_auc
+Regresión logística,0.6743,0.1804,0.6459,0.282,0.7213,0.2632
+Árbol de decisión,0.6007,0.1572,0.695,0.2563,0.6896,0.2101
+Random forest,0.705,0.1911,0.6124,0.2913,0.723,0.2681
+Clasificador base,0.901,0.0,0.0,0.0,0.5,0.099

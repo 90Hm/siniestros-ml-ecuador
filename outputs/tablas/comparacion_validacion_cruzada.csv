@@ -1,0 +1,5 @@
+modelo,accuracy_media,accuracy_desv,precision_media,precision_desv,recall_media,recall_desv,f1_media,f1_desv,roc_auc_media,roc_auc_desv,pr_auc_media,pr_auc_desv
+Regresión logística,0.6826,0.0069,0.1852,0.0049,0.6486,0.0126,0.2881,0.0069,0.7312,0.0087,0.266,0.0061
+Árbol de decisión,0.5981,0.023,0.1608,0.0054,0.7228,0.0244,0.2629,0.0061,0.7015,0.0075,0.2184,0.0043
+Random forest,0.7209,0.0098,0.1991,0.0085,0.6011,0.0234,0.2991,0.0118,0.7384,0.0099,0.2671,0.011
+Clasificador base,0.901,0.0001,0.0,0.0,0.0,0.0,0.0,0.0,0.5,0.0,0.099,0.0001

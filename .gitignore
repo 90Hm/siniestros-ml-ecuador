@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+data/raw/
+data/processed/
+pruebas/datos_simulados/
+pruebas/salidas_simuladas/
+pruebas/procesados_simulados/
+.venv/
+.ipynb_checkpoints/

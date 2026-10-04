@@ -1,0 +1,47 @@
+modelo,parametro,valor
+Regresión logística,C,1.0
+Regresión logística,class_weight,balanced
+Regresión logística,dual,False
+Regresión logística,fit_intercept,True
+Regresión logística,intercept_scaling,1
+Regresión logística,l1_ratio,0.0
+Regresión logística,max_iter,1000
+Regresión logística,n_jobs,
+Regresión logística,penalty,deprecated
+Regresión logística,random_state,42
+Regresión logística,solver,lbfgs
+Regresión logística,tol,0.0001
+Regresión logística,verbose,0
+Regresión logística,warm_start,False
+Árbol de decisión,ccp_alpha,0.0
+Árbol de decisión,class_weight,balanced
+Árbol de decisión,criterion,gini
+Árbol de decisión,max_depth,8
+Árbol de decisión,max_features,
+Árbol de decisión,max_leaf_nodes,
+Árbol de decisión,min_impurity_decrease,0.0
+Árbol de decisión,min_samples_leaf,20
+Árbol de decisión,min_samples_split,2
+Árbol de decisión,min_weight_fraction_leaf,0.0
+Árbol de decisión,monotonic_cst,
+Árbol de decisión,random_state,42
+Árbol de decisión,splitter,best
+Random forest,bootstrap,True
+Random forest,ccp_alpha,0.0
+Random forest,class_weight,balanced_subsample
+Random forest,criterion,gini
+Random forest,max_depth,12
+Random forest,max_features,sqrt
+Random forest,max_leaf_nodes,
+Random forest,max_samples,
+Random forest,min_impurity_decrease,0.0
+Random forest,min_samples_leaf,5
+Random forest,min_samples_split,2
+Random forest,min_weight_fraction_leaf,0.0
+Random forest,monotonic_cst,
+Random forest,n_estimators,300
+Random forest,n_jobs,-1
+Random forest,oob_score,False
+Random forest,random_state,42
+Random forest,verbose,0
+Random forest,warm_start,False

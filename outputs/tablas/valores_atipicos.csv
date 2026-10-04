@@ -1,0 +1,10 @@
+variable,q1,q3,limite_inferior,limite_superior,atipicos,porcentaje
+hora_num,7.0,19.0,-11.0,37.0,0,0.0
+fallecidos,0.0,0.0,0.0,0.0,4180,9.9
+lesionados,0.0,1.0,-1.5,2.5,2258,5.35
+provincia,9.0,17.0,-3.0,29.0,0,0.0
+canton,901.0,1701.0,-299.0,2901.0,40,0.09
+mes,4.0,10.0,-5.0,19.0,0,0.0
+hora,7.0,19.0,-11.0,37.0,0,0.0
+num_lesionado,0.0,1.0,-1.5,2.5,2258,5.35
+total_victimas,0.0,1.0,-1.5,2.5,2567,6.08

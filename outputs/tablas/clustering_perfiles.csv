@@ -1,0 +1,3 @@
+cluster,siniestros,porcentaje_del_total,porcentaje_con_fallecidos,media_hora_num,media_hora_pico,media_mes,media_fin_de_semana,media_viernes_a_domingo,media_es_amazonia,mas_frecuente_franja_horaria,mas_frecuente_dia_semana,mas_frecuente_provincia,mas_frecuente_zona,mas_frecuente_clase,mas_frecuente_causa
+0,16092,38.12,11.65,12.023,0.26,6.672,1.0,1.0,0.015,noche,domingo,GUAYAS,1,3,4
+1,26122,61.88,8.83,13.044,0.324,6.671,0.0,0.238,0.014,tarde,viernes,GUAYAS,1,3,4

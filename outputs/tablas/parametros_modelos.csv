@@ -1,0 +1,4 @@
+modelo,parametros_principales
+Regresión logística,"C=1.0, class_weight=balanced, max_iter=1000, solver=lbfgs"
+Árbol de decisión,"max_depth=8, min_samples_leaf=20, class_weight=balanced, criterion=gini"
+Random forest,"n_estimators=300, max_depth=12, min_samples_leaf=5, class_weight=balanced_subsample, max_features=sqrt"

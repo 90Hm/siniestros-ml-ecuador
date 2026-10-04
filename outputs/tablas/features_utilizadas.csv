@@ -1,0 +1,13 @@
+variable,tipo
+franja_horaria,categorica
+dia_semana,categorica
+provincia,categorica
+zona,categorica
+clase,categorica
+causa,categorica
+hora_num,numerica
+hora_pico,numerica
+mes,numerica
+fin_de_semana,numerica
+viernes_a_domingo,numerica
+es_amazonia,numerica

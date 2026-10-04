@@ -1,0 +1,12 @@
+variable_logica,columna_detectada
+fallecidos,num_fallecido
+lesionados,num_lesionado
+fecha,
+anio,anio
+mes,mes
+dia,dia
+hora,hora
+provincia,provincia
+zona,zona
+clase,clase
+causa,causa
