@@ -41,6 +41,28 @@ python src/04_clustering_y_amazonia.py
 
 Para salir del entorno virtual uso `deactivate`.
 
+## Cómo lo ejecuto en Windows
+
+Desde PowerShell, en la carpeta del proyecto, creo y activo el entorno virtual e instalo las dependencias:
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+Con el entorno activo ejecuto los mismos pasos del análisis:
+
+```powershell
+python src/00_descargar_datos.py
+python src/01_eda.py
+python src/02_preprocesamiento.py
+python src/03_modelado.py
+python src/04_clustering_y_amazonia.py
+```
+
+Para salir del entorno virtual uso `deactivate`.
+
 ## Decisiones que tomé
 
 Definí `objetivo_fallecidos` como 1 cuando `num_fallecido` es mayor que cero. No incluí fallecidos, lesionados ni total de víctimas entre las variables predictoras, porque revelarían directamente información relacionada con el objetivo.
